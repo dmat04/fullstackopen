@@ -10,9 +10,23 @@ const StatisticLine = ({ stat, value }) => (
   <div>{stat} {value}</div>
 )
 
+const CalculatedAverages = ({ statistics }) => {
+  if (statistics.total > 0) {
+    return (
+      <div>
+        <StatisticLine stat='All' value={statistics.total}/>
+        <StatisticLine stat='Average' value={statistics.average}/>
+        <StatisticLine stat='Positive' value={statistics.positive + '%'}/>
+      </div>
+    )
+  } else {
+    return <div>No feedback given</div>
+  }
+}
+
 const CalculateStats = (good, neutral, bad) => {
   const total = good + neutral + bad
-  const average = (good - bad) / total 
+  const average = (good - bad) / total
   const positive = (good / total) * 100
 
   return {
@@ -52,9 +66,7 @@ const App = () => {
       <StatisticLine stat='Neutral' value={neutral} />
       <StatisticLine stat='Bad' value={bad} />
       <br />
-      <StatisticLine stat='All' value={stats.total} />
-      <StatisticLine stat='Average' value={stats.average} />
-      <StatisticLine stat='Positive' value={stats.positive + '%'} />
+      <CalculatedAverages statistics={stats}/>
     </div>
   )
 }
