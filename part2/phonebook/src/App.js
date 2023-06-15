@@ -3,12 +3,15 @@ import phonebookService from './services/phonebook'
 import NameFilter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import PersonList from './components/PersonList'
+import Notification from './components/Notification'
+import './index.css'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [nameFilter, setNameFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
 
   const hook = () => {
     phonebookService
@@ -37,16 +40,20 @@ const App = () => {
 
     const existingRecord = persons.find(p => p.name === newName)
     if (existingRecord) {
-      const confirmMessage = `${newName} is already added to phonebook, replace the old number with a new one?` 
+      const confirmMessage = `${newName} is already added to phonebook, replace the old number with a new one?`
 
       if (window.confirm(confirmMessage)) {
-        const updatedRecord = { ...existingRecord, number: newNumber}
+        const updatedRecord = { ...existingRecord, number: newNumber }
         phonebookService
           .update(updatedRecord.id, updatedRecord)
           .then(response => {
             setPersons(persons.map(p => p.id !== updatedRecord.id ? p : response))
             setNewName('')
             setNewNumber('')
+            setNotificationMessage(
+              `Successfully updated number of ${updatedRecord.name}`
+            )
+            setTimeout(() => { setNotificationMessage(null) }, 5000)
           })
       }
     } else {
@@ -61,6 +68,8 @@ const App = () => {
           setPersons(persons.concat(savedPerson))
           setNewName('')
           setNewNumber('')
+          setNotificationMessage(`Added ${savedPerson.name}`)
+          setTimeout(() => { setNotificationMessage(null) }, 5000)
         })
     }
   }
@@ -69,8 +78,12 @@ const App = () => {
     return () => {
       if (window.confirm(`Delete '${person.name}' ?`)) {
         phonebookService
-        .deleteRecord(person.id)
-        .then(setPersons(persons.filter(p => p.id !== person.id)))
+          .deleteRecord(person.id)
+          .then(response => {
+            setPersons(persons.filter(p => p.id !== person.id))
+            setNotificationMessage(`Deleted ${person.name}`)
+            setTimeout(() => { setNotificationMessage(null) }, 5000)
+          })
       }
     }
   }
@@ -78,7 +91,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-
+      <Notification message={notificationMessage} />
       <NameFilter filter={nameFilter} filterChangeHandler={handleNameFilterChange} />
 
       <h2>Add a new number</h2>
@@ -90,8 +103,8 @@ const App = () => {
         numberChangeHandler={handleNumberChange} />
 
       <h2>Numbers</h2>
-      <PersonList 
-        persons={displayPersons} 
+      <PersonList
+        persons={displayPersons}
         deleteHandlerFactory={personDeleteHandlerFactory}
       />
     </div>
