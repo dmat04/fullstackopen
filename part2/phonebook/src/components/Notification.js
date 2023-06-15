@@ -1,11 +1,11 @@
-const Notification = ({ message }) => {
-    if (message === null) {
+const Notification = ({ messageObject }) => {
+    if (messageObject === null || messageObject.message === null) {
         return null
     }
 
     return (
-        <div className="notification">
-            {message}
+        <div className={messageObject.className}>
+            {messageObject.message}
         </div>
     )
 }

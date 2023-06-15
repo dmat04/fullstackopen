@@ -11,12 +11,18 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [nameFilter, setNameFilter] = useState('')
-  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notification, setNotification] = useState(null)
 
   const hook = () => {
     phonebookService
       .getAll()
       .then(data => setPersons(data))
+      .catch(error => {
+        setNotification({
+          message: `Couldn't fetch data from server`,
+          className: 'error'
+        })
+      })
   }
 
   useEffect(hook, [])
@@ -50,10 +56,19 @@ const App = () => {
             setPersons(persons.map(p => p.id !== updatedRecord.id ? p : response))
             setNewName('')
             setNewNumber('')
-            setNotificationMessage(
-              `Successfully updated number of ${updatedRecord.name}`
-            )
-            setTimeout(() => { setNotificationMessage(null) }, 5000)
+            setNotification({
+              message: `Successfully updated number of ${updatedRecord.name}`,
+              className: 'notification'
+            })
+            setTimeout(() => { setNotification(null) }, 5000)
+          })
+          .catch(error => {
+            setNotification({
+              message: `Couldn't update ${updatedRecord.name}, the record doesn't seem to exist anymore.`,
+              className: 'error'
+            })
+            setTimeout(() => { setNotification(null) }, 5000)
+            setPersons(persons.filter(p => p.id !== updatedRecord.id))
           })
       }
     } else {
@@ -68,8 +83,18 @@ const App = () => {
           setPersons(persons.concat(savedPerson))
           setNewName('')
           setNewNumber('')
-          setNotificationMessage(`Added ${savedPerson.name}`)
-          setTimeout(() => { setNotificationMessage(null) }, 5000)
+          setNotification({
+            message: `Added ${savedPerson.name}`,
+            className: 'notification'
+          })
+          setTimeout(() => { setNotification(null) }, 5000)
+        })
+        .catch(error => {
+          setNotification({
+            message: `Couldn't save new entry on the server.`,
+            className: 'error'
+          })
+          setTimeout(() => { setNotification(null) }, 5000)
         })
     }
   }
@@ -81,8 +106,19 @@ const App = () => {
           .deleteRecord(person.id)
           .then(response => {
             setPersons(persons.filter(p => p.id !== person.id))
-            setNotificationMessage(`Deleted ${person.name}`)
-            setTimeout(() => { setNotificationMessage(null) }, 5000)
+            setNotification({
+              message: `Deleted ${person.name}`,
+              className: 'notification'
+            })
+            setTimeout(() => { setNotification(null) }, 5000)
+          })
+          .catch(error => {
+            setNotification({
+              message: `Couldn't delete ${person.name}, the record doesn't seem to exist anymore.`,
+              className: 'error'
+            })
+            setTimeout(() => { setNotification(null) }, 5000)
+            setPersons(persons.filter(p => p.id !== person.id))
           })
       }
     }
@@ -91,7 +127,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={notificationMessage} />
+      <Notification messageObject={notification} />
       <NameFilter filter={nameFilter} filterChangeHandler={handleNameFilterChange} />
 
       <h2>Add a new number</h2>
