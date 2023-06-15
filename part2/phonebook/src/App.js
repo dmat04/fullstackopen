@@ -52,6 +52,16 @@ const App = () => {
     }
   }
 
+  const personDeleteHandlerFactory = (person) => {
+    return () => {
+      if (window.confirm(`Delete '${person.name}' ?`)) {
+        phonebookService
+        .deleteRecord(person.id)
+        .then(setPersons(persons.filter(p => p.id !== person.id)))
+      }
+    }
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
@@ -67,7 +77,10 @@ const App = () => {
         numberChangeHandler={handleNumberChange} />
 
       <h2>Numbers</h2>
-      <PersonList persons={displayPersons} />
+      <PersonList 
+        persons={displayPersons} 
+        deleteHandlerFactory={personDeleteHandlerFactory}
+      />
     </div>
   )
 }
