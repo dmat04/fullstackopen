@@ -20,7 +20,7 @@ const App = () => {
   useEffect(() => {
     countryService.getAll()
       .then(response => setCountries(response))
-      .catch(error => { console.log(error) })
+      .catch(error => console.log(error))
   }, [])
 
   const filterKeyword = countryName.toUpperCase()
@@ -34,7 +34,7 @@ const App = () => {
   } else if (filterResult.length === 1) {
     resultDisplay = <CountryDetails country={filterResult[0]} />
   } else if (filterResult.length <= 10) {
-    resultDisplay = <FilterResults results={filterResult} showDetailHandler={detailHandlerFactory}/>
+    resultDisplay = <FilterResults results={filterResult} showDetailHandler={detailHandlerFactory} />
   } else {
     resultDisplay = <div>Too many matches, please be more specific</div>
   }
@@ -49,8 +49,6 @@ const App = () => {
       </div>
     </div>
   )
-
-
 }
 
 export default App
