@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import countryService from './services/countryService'
 import CountryDetails from './components/CountryDetails'
+import FilterResults from './components/FilterResults'
 
 const App = () => {
   const [countryName, setCountryName] = useState('')
@@ -8,6 +9,12 @@ const App = () => {
 
   const countryNameChangeHandler = (event) => {
     setCountryName(event.target.value)
+  }
+
+  const detailHandlerFactory = (country) => {
+    return () => {
+      setCountryName(country.name.common)
+    }
   }
 
   useEffect(() => {
@@ -27,10 +34,7 @@ const App = () => {
   } else if (filterResult.length === 1) {
     resultDisplay = <CountryDetails country={filterResult[0]} />
   } else if (filterResult.length <= 10) {
-    resultDisplay =
-      <ul>{
-        filterResult.map(country => <li key={country.name.official}>{country.name.common}</li>)
-      }</ul>
+    resultDisplay = <FilterResults results={filterResult} showDetailHandler={detailHandlerFactory}/>
   } else {
     resultDisplay = <div>Too many matches, please be more specific</div>
   }
