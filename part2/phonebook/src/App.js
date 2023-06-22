@@ -13,16 +13,30 @@ const App = () => {
   const [nameFilter, setNameFilter] = useState('')
   const [notification, setNotification] = useState(null)
 
+  const errorHandler = (error => {
+    let errorMessage = `An error occured: ${error.message}`
+    const status = error.response.status
+
+    if (error.response.data.error) {
+      if (status === 400) {
+        errorMessage = error.response.data.error
+      } else {
+        errorMessage = `An error occured: ${error.response.data.error}`
+      }
+    }
+
+    setNotification({
+      message: errorMessage,
+      className: 'error'
+    })
+    setTimeout(() => { setNotification(null) }, 5000)
+  })
+
   const hook = () => {
     phonebookService
       .getAll()
       .then(data => setPersons(data))
-      .catch(error => {
-        setNotification({
-          message: `Couldn't fetch data from server`,
-          className: 'error'
-        })
-      })
+      .catch(errorHandler)
   }
 
   useEffect(hook, [])
@@ -62,13 +76,7 @@ const App = () => {
             })
             setTimeout(() => { setNotification(null) }, 5000)
           })
-          .catch(error => {
-            setNotification({
-              message: `Person validation failed: ${error.response.data.error}`,
-              className: 'error'
-            })
-            setTimeout(() => { setNotification(null) }, 5000)
-          })
+          .catch(errorHandler)
       }
     } else {
       const newPerson = {
@@ -88,13 +96,7 @@ const App = () => {
           })
           setTimeout(() => { setNotification(null) }, 5000)
         })
-        .catch(error => {
-          setNotification({
-            message: `Person validation failed: ${error.response.data.error}`,
-            className: 'error'
-          })
-          setTimeout(() => { setNotification(null) }, 5000)
-        })
+        .catch(errorHandler)
     }
   }
 
@@ -111,14 +113,7 @@ const App = () => {
             })
             setTimeout(() => { setNotification(null) }, 5000)
           })
-          .catch(error => {
-            setNotification({
-              message: `Couldn't delete ${person.name}, the record doesn't seem to exist anymore.`,
-              className: 'error'
-            })
-            setTimeout(() => { setNotification(null) }, 5000)
-            setPersons(persons.filter(p => p.id !== person.id))
-          })
+          .catch(errorHandler)
       }
     }
   }
