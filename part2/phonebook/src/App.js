@@ -105,7 +105,7 @@ const App = () => {
       if (window.confirm(`Delete '${person.name}' ?`)) {
         phonebookService
           .deleteRecord(person.id)
-          .then(response => {
+          .then(() => {
             setPersons(persons.filter(p => p.id !== person.id))
             setNotification({
               message: `Deleted ${person.name}`,
