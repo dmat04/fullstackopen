@@ -63,9 +63,8 @@ const App = () => {
             setTimeout(() => { setNotification(null) }, 5000)
           })
           .catch(error => {
-            const errors = error.response.data.errors.join(', ')
             setNotification({
-              message: `Couldn't update ${updatedRecord.name}: ${errors}`,
+              message: `Person validation failed: ${error.response.data.error}`,
               className: 'error'
             })
             setTimeout(() => { setNotification(null) }, 5000)
@@ -91,7 +90,7 @@ const App = () => {
         })
         .catch(error => {
           setNotification({
-            message: `Couldn't save new entry on the server.`,
+            message: `Person validation failed: ${error.response.data.error}`,
             className: 'error'
           })
           setTimeout(() => { setNotification(null) }, 5000)
