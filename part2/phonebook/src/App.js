@@ -63,12 +63,12 @@ const App = () => {
             setTimeout(() => { setNotification(null) }, 5000)
           })
           .catch(error => {
+            const errors = error.response.data.errors.join(', ')
             setNotification({
-              message: `Couldn't update ${updatedRecord.name}, the record doesn't seem to exist anymore.`,
+              message: `Couldn't update ${updatedRecord.name}: ${errors}`,
               className: 'error'
             })
             setTimeout(() => { setNotification(null) }, 5000)
-            setPersons(persons.filter(p => p.id !== updatedRecord.id))
           })
       }
     } else {
